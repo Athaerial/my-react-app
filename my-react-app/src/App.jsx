@@ -225,39 +225,24 @@ export default function DnDHealthTracker() {
                       <tr key={index} className="border-t">
                         <td className="py-3 px-4 font-medium">{character.name || "Unnamed"}</td>
                         <td className="py-3 px-4 text-gray-600">{character.playerName}</td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-center">
-                            <span className={`font-bold ${getHealthColor(character.currentHP, character.maxHP)}`}>
-                              {character.currentHP}
-                            </span>
-                            <span className="mx-1">/</span>
-                            <span>{character.maxHP}</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div 
-                              className={`h-2 rounded-full ${
-                                character.currentHP / character.maxHP > 0.5 ? 'bg-green-500' : 
-                                character.currentHP / character.maxHP > 0.25 ? 'bg-yellow-500' : 'bg-red-500'
-                              }`} 
-                              style={{width: `${Math.max(0, Math.min(100, (character.currentHP / character.maxHP) * 100))}%`}}
-                            ></div>
-                          </div>
+                        <td className="py-3 px-4 text-center">
+                          <span className={getHealthColor(character.currentHP, character.maxHP)}>
+                            {character.currentHP}/{character.maxHP}
+                          </span>
                         </td>
-                        <td className="py-3 px-4">
-                          <div className="flex justify-center space-x-2">
-                            <button 
-                              onClick={() => adjustHealth(character.playerName, -1)}
-                              className="bg-red-100 hover:bg-red-200 text-red-700 w-8 h-8 rounded-full"
-                            >
-                              -
-                            </button>
-                            <button 
-                              onClick={() => adjustHealth(character.playerName, 1)}
-                              className="bg-green-100 hover:bg-green-200 text-green-700 w-8 h-8 rounded-full"
-                            >
-                              +
-                            </button>
-                          </div>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={() => adjustHealth(character.playerName, 5)}
+                            className="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700"
+                          >
+                            Heal
+                          </button>
+                          <button
+                            onClick={() => adjustHealth(character.playerName, -5)}
+                            className="bg-red-600 text-white py-1 px-3 rounded hover:bg-red-700 ml-2"
+                          >
+                            Damage
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -271,129 +256,18 @@ export default function DnDHealthTracker() {
         {view === 'player' && (
           <div>
             <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Player View - Room: {roomCode}</h2>
-              <div className="flex justify-between items-center">
-                <p className="text-gray-600">Player: {username}</p>
-                <button 
-                  onClick={handleLogout}
-                  className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                >
-                  Change Room
-                </button>
+              <h2 className="text-xl font-semibold mb-2">Player View</h2>
+              <p className="text-gray-700 mb-2">Character: {characterName || "Unnamed"}</p>
+              <div className="flex items-center mb-4">
+                <div className="text-sm text-gray-600">Max HP: {maxHP}</div>
+                <div className="text-sm text-gray-600 ml-4">Current HP: {currentHP}</div>
               </div>
-            </div>
-            
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-gray-700 mb-2">Character Name</label>
-                <input 
-                  type="text" 
-                  value={characterName}
-                  onChange={(e) => {
-                    setCharacterName(e.target.value);
-                  }}
-                  onBlur={savePlayerData}
-                  className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Enter character name"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">Max HP</label>
-                  <input 
-                    type="number" 
-                    value={maxHP}
-                    onChange={(e) => {
-                      // Strip leading zeros and convert to number
-                      const value = e.target.value.replace(/^0+/, '');
-                      setMaxHP(value === '' ? 0 : parseInt(value));
-                    }}
-                    onBlur={savePlayerData}
-                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    min="1"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-gray-700 mb-2">Current HP</label>
-                  <input 
-                    type="number" 
-                    value={currentHP}
-                    onChange={(e) => {
-                      // Strip leading zeros and convert to number
-                      const value = e.target.value.replace(/^0+/, '');
-                      setCurrentHP(value === '' ? 0 : Math.min(maxHP, Math.max(0, parseInt(value) || 0)));
-                    }}
-                    onBlur={savePlayerData}
-                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    min="0"
-                    max={maxHP}
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h3 className="font-semibold mb-3">Health Adjustment</h3>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-3">
-                  <button 
-                    onClick={() => {
-                      setCurrentHP(Math.max(0, currentHP - 5));
-                      savePlayerData();
-                    }}
-                    className="bg-red-500 hover:bg-red-600 text-white w-10 h-10 rounded-full"
-                  >
-                    -5
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setCurrentHP(Math.max(0, currentHP - 1));
-                      savePlayerData();
-                    }}
-                    className="bg-red-400 hover:bg-red-500 text-white w-10 h-10 rounded-full"
-                  >
-                    -1
-                  </button>
-                </div>
-                
-                <div className="text-center">
-                  <div className={`text-2xl font-bold ${getHealthColor(currentHP, maxHP)}`}>
-                    {currentHP} / {maxHP}
-                  </div>
-                  <div className="w-24 bg-gray-200 rounded-full h-3 mt-1">
-                    <div 
-                      className={`h-3 rounded-full ${
-                        currentHP / maxHP > 0.5 ? 'bg-green-500' : 
-                        currentHP / maxHP > 0.25 ? 'bg-yellow-500' : 'bg-red-500'
-                      }`} 
-                      style={{width: `${Math.max(0, Math.min(100, (currentHP / maxHP) * 100))}%`}}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3">
-                  <button 
-                    onClick={() => {
-                      setCurrentHP(Math.min(maxHP, currentHP + 1));
-                      savePlayerData();
-                    }}
-                    className="bg-green-400 hover:bg-green-500 text-white w-10 h-10 rounded-full"
-                  >
-                    +1
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setCurrentHP(Math.min(maxHP, currentHP + 5));
-                      savePlayerData();
-                    }}
-                    className="bg-green-500 hover:bg-green-600 text-white w-10 h-10 rounded-full"
-                  >
-                    +5
-                  </button>
-                </div>
-              </div>
+              <button
+                onClick={savePlayerData}
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         )}
