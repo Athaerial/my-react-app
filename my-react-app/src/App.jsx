@@ -274,12 +274,13 @@ export default function DnDHealthTracker() {
               <h2 className="text-xl font-semibold mb-2">Player View - Room: {roomCode}</h2>
               <div className="flex justify-between items-center">
                 <p className="text-gray-600">Player: {username}</p>
-                <button 
-                  onClick={handleLogout}
-                  className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm"
-                >
-                  Change Room
-                </button>
+                <button
+  onClick={savePlayerData}
+  className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+>
+  Save Changes
+</button>
+
               </div>
             </div>
             
